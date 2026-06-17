@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { hashPassword } from '@/lib/auth/password';
+import { registrationOpen } from '@/lib/auth/registration';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 
@@ -20,6 +21,10 @@ export async function registerUser(input: {
   email: string;
   password: string;
 }): Promise<RegisterResult> {
+  if (!registrationOpen) {
+    return { ok: false, error: 'Registration is currently closed' };
+  }
+
   const parsed = registerSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' };

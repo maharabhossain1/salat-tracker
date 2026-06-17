@@ -6,6 +6,7 @@ import GitHub from 'next-auth/providers/github';
 import { z } from 'zod';
 
 import { comparePasswords } from '@/lib/auth/password';
+import { registrationOpen } from '@/lib/auth/registration';
 import { db } from '@/lib/db';
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema';
 
@@ -50,6 +51,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: '/login',
   },
   callbacks: {
+    async signIn({ account, user }) {
+      // Credentials sign-in is already validated against an existing user.
+      if (account?.provider === 'credentials') return true;
+      // When sign-up is closed, only let OAuth in for an already-known email —
+      // this stops anyone from creating an account via the GitHub button.
+      if (!registrationOpen) {
+        if (!user.email) return false;
+        const existing = await db.query.users.findFirst({
+          where: eq(users.email, user.email),
+        });
+        return !!existing;
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
