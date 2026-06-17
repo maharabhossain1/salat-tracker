@@ -1,0 +1,14 @@
+# Netlify config for Next.js 16 (App Router) + Drizzle migrations on every build.
+[build]
+  # Migrations run before the build, on every push/deploy. Idempotent —
+  # already-applied migrations are skipped.
+  command = "pnpm db:migrate && pnpm build"
+
+[build.environment]
+  NODE_VERSION = "24"
+  # Install devDependencies (drizzle-kit) during build.
+  NODE_ENV = "development"
+
+# Official Next.js runtime — handles SSR, server actions, and middleware (proxy.ts).
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
