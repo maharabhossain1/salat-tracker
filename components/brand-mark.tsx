@@ -1,21 +1,34 @@
 import { cn } from '@/lib/utils';
 
-/** Crescent + star, matching the app icon. Inherits text color via currentColor. */
-export function BrandMark({ className }: { className?: string }) {
+interface BrandMarkProps {
+  className?: string;
+  /** Crescent fill color. Defaults to currentColor. */
+  crescentColor?: string;
+  /** Bead fill color. Defaults to #c9a24b (gold). Pass "currentColor" for monochrome. */
+  beadColor?: string;
+  /** Unique suffix for mask IDs — required when multiple marks appear on one page. */
+  maskId?: string;
+}
+
+/** Crescent + bead mark. Crescent inherits text color; bead is gold by default. */
+export function BrandMark({
+  className,
+  crescentColor = 'currentColor',
+  beadColor = '#c9a24b',
+  maskId = 'bm',
+}: BrandMarkProps) {
+  const mid = `cm-${maskId}`;
   return (
     <svg viewBox="0 0 512 512" className={cn('h-6 w-6', className)} aria-hidden role="img">
       <defs>
-        <mask id="crescent-mask">
-          <rect width="512" height="512" fill="black" />
-          <circle cx="256" cy="256" r="150" fill="white" />
-          <circle cx="314" cy="215" r="138" fill="black" />
+        <mask id={mid}>
+          <rect width="512" height="512" fill="#000" />
+          <circle cx="235" cy="256" r="180" fill="#fff" />
+          <circle cx="320" cy="256" r="158" fill="#000" />
         </mask>
       </defs>
-      <circle cx="256" cy="256" r="150" fill="currentColor" mask="url(#crescent-mask)" />
-      <path
-        fill="currentColor"
-        d="M352 170 l10 26 l27 2 l-21 17 l7 26 l-23 -15 l-23 15 l7 -26 l-21 -17 l27 -2 z"
-      />
+      <circle cx="235" cy="256" r="180" fill={crescentColor} mask={`url(#${mid})`} />
+      <circle cx="291" cy="256" r="43" fill={beadColor} />
     </svg>
   );
 }

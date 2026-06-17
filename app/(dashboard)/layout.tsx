@@ -14,9 +14,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="min-h-dvh">
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/70 pt-[env(safe-area-inset-top)] backdrop-blur-lg">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <BrandMark className="h-6 w-6 text-primary" />
-            <span className="font-display text-lg font-semibold tracking-tight">Salat</span>
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <BrandMark className="h-7 w-7 text-primary" maskId="hdr" />
+            <div className="flex h-7 items-center gap-2.5">
+              <div className="w-px self-stretch bg-primary/20" />
+              <div className="flex flex-col leading-none">
+                <span className="font-display text-[17px] font-semibold tracking-tight text-primary">
+                  Salat
+                </span>
+                <span
+                  className="font-label text-[9px] font-normal uppercase tracking-[0.4em] text-primary/60"
+                  style={{ marginTop: 2 }}
+                >
+                  Tracker
+                </span>
+              </div>
+            </div>
           </Link>
           <div className="flex items-center gap-1">
             <Link

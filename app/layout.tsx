@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Lora } from 'next/font/google';
+import { Inter, Jost, Lora } from 'next/font/google';
 
 import '@/app/globals.css';
 import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register';
@@ -15,6 +15,13 @@ const lora = Lora({
   variable: '--font-lora',
   display: 'swap',
   weight: ['500', '600', '700'],
+});
+
+const jost = Jost({
+  subsets: ['latin'],
+  variable: '--font-jost',
+  display: 'swap',
+  weight: ['300', '400', '500'],
 });
 
 export const metadata: Metadata = {
@@ -46,7 +53,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${lora.variable} h-full`}>
+    <html lang="en" className={`${inter.variable} ${lora.variable} ${jost.variable} h-full`}>
       <body className="min-h-full">
         {children}
         <ServiceWorkerRegister />

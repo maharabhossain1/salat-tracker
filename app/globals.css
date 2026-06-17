@@ -25,6 +25,9 @@
   /* Brand tones for gradients / hero. */
   --brand-deep: oklch(0.42 0.1 164);
   --brand-bright: oklch(0.62 0.13 160);
+  /* Brand palette from identity system. */
+  --brand-gold: #c9a24b;
+  --brand-ivory: #f7f3e9;
 }
 
 /* Map tokens onto Tailwind's color utilities (v4). */
@@ -50,8 +53,11 @@
   --color-ring: var(--ring);
   --color-brand-deep: var(--brand-deep);
   --color-brand-bright: var(--brand-bright);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-ivory: var(--brand-ivory);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-lora), Georgia, 'Times New Roman', serif;
+  --font-label: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ── Base ───────────────────────────────────────────────────── */
