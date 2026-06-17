@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, RefreshCw, WifiOff } from 'lucide-react';
+import { AlertCircle, WifiOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
@@ -35,7 +35,6 @@ export function OfflineSync() {
   const [isOnline, setIsOnline] = useState(() =>
     typeof window !== 'undefined' ? navigator.onLine : true,
   );
-  const [syncing, setSyncing] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [syncError, setSyncError] = useState<SyncError | null>(null);
   const [retryIn, setRetryIn] = useState<number | null>(null);
@@ -65,7 +64,6 @@ export function OfflineSync() {
 
     clearRetryTimer();
     isFlushingRef.current = true;
-    setSyncing(true);
     setSyncError(null);
     setRetriesExhausted(false);
 
@@ -111,7 +109,6 @@ export function OfflineSync() {
       }
     } finally {
       isFlushingRef.current = false;
-      setSyncing(false);
     }
   }, [router, clearRetryTimer]);
 
@@ -173,18 +170,7 @@ export function OfflineSync() {
     };
   }, [flush, scheduleFlush, clearRetryTimer, handleOnline, handleOffline]);
 
-  if (isOnline && !syncing && !syncError && pendingCount === 0) return null;
-
-  if (syncing) {
-    return (
-      <Banner color="amber">
-        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-        <span>
-          Syncing {pendingCount} prayer{pendingCount !== 1 ? 's' : ''}…
-        </span>
-      </Banner>
-    );
-  }
+  if (isOnline && !syncError) return null;
 
   if (syncError) {
     return (
