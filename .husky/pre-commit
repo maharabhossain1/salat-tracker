@@ -1,0 +1,5 @@
+# lint and format staged files
+./node_modules/.bin/lint-staged
+
+# verify typescript
+./node_modules/.bin/tsc --noEmit
