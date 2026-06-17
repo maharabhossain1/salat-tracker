@@ -54,27 +54,30 @@ export async function incrementKaza(prayer: string, amount = 1): Promise<void> {
   revalidatePath('/dashboard');
 }
 
-/** Undo one make-up: peel one off the most recent log entry for this prayer. */
-export async function decrementKaza(prayer: string): Promise<void> {
+/** Undo `amount` make-ups: peels off the most recent log entries for this prayer. */
+export async function decrementKaza(prayer: string, amount = 1): Promise<void> {
   const userId = await requireUserId();
   const key = prayerSchema.parse(prayer);
+  const n = Math.max(1, Math.floor(amount));
 
-  const [latest] = await db
-    .select({ id: kazaLogs.id, count: kazaLogs.count })
-    .from(kazaLogs)
-    .where(and(eq(kazaLogs.userId, userId), eq(kazaLogs.prayer, key as never)))
-    .orderBy(desc(kazaLogs.createdAt))
-    .limit(1);
+  for (let i = 0; i < n; i++) {
+    const [latest] = await db
+      .select({ id: kazaLogs.id, count: kazaLogs.count })
+      .from(kazaLogs)
+      .where(and(eq(kazaLogs.userId, userId), eq(kazaLogs.prayer, key as never)))
+      .orderBy(desc(kazaLogs.createdAt))
+      .limit(1);
 
-  if (!latest) return;
+    if (!latest) break;
 
-  if (latest.count > 1) {
-    await db
-      .update(kazaLogs)
-      .set({ count: latest.count - 1 })
-      .where(eq(kazaLogs.id, latest.id));
-  } else {
-    await db.delete(kazaLogs).where(eq(kazaLogs.id, latest.id));
+    if (latest.count > 1) {
+      await db
+        .update(kazaLogs)
+        .set({ count: latest.count - 1 })
+        .where(eq(kazaLogs.id, latest.id));
+    } else {
+      await db.delete(kazaLogs).where(eq(kazaLogs.id, latest.id));
+    }
   }
   revalidatePath('/dashboard');
 }

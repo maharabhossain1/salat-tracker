@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { BrandMark } from '@/components/brand-mark';
 import { SignOutButton } from '@/components/layout/sign-out-button';
+import { OfflineSync } from '@/components/pwa/offline-sync';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -12,6 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-dvh">
+      <OfflineSync />
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/70 pt-[env(safe-area-inset-top)] backdrop-blur-lg">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
           <Link href="/dashboard" className="flex items-center gap-3">

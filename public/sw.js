@@ -1,6 +1,8 @@
-/* Minimal PWA service worker: precache app shell + offline fallback,
-   network-first for navigations, cache-first for static assets. */
-const CACHE = 'salat-v1';
+/* PWA service worker: offline shell + static asset caching.
+   Navigation pages are private/no-store so we never try to cache them —
+   Chrome 117+ silently drops those puts, leaving nothing to serve offline.
+   Instead we just fall back to the precached /offline page. */
+const CACHE = 'salat-v2';
 const OFFLINE_URL = '/offline';
 const PRECACHE = [OFFLINE_URL, '/icons/icon-192.png', '/icons/icon-512.png'];
 
@@ -28,33 +30,24 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  // Never cache auth or API traffic.
   if (url.pathname.startsWith('/api')) return;
 
-  // Navigations: network-first, fall back to cached page then offline shell.
+  // Navigation: network-first, fall back to /offline.
+  // Don't cache the response — authenticated pages are private/no-store.
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(request, copy));
-          return res;
-        })
-        .catch(() => caches.match(request).then(hit => hit || caches.match(OFFLINE_URL))),
-    );
+    event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
     return;
   }
 
-  // Static assets: cache-first, revalidate in the background.
+  // Static assets (JS chunks, icons): cache-first, refresh in background.
   if (url.pathname.startsWith('/_next/static') || url.pathname.startsWith('/icons')) {
     event.respondWith(
       caches.match(request).then(hit => {
-        const fetchAndCache = fetch(request).then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(request, copy));
+        const fresh = fetch(request).then(res => {
+          caches.open(CACHE).then(c => c.put(request, res.clone()));
           return res;
         });
-        return hit || fetchAndCache;
+        return hit ?? fresh;
       }),
     );
   }
