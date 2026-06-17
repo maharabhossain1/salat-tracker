@@ -31,41 +31,56 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000,
   },
   async headers() {
-    const headers = shouldSkipCaching
-      ? []
-      : [
-          {
-            source: '/:path*',
-            headers: [
-              ...securityHeaders,
-              { key: 'Cache-Control', value: 'public, max-age=3600, must-revalidate' },
-            ],
-          },
-          {
-            source: '/fonts/:font*',
-            headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
-          },
-          {
-            source: '/images/:image*',
-            headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
-          },
-          // /_next/static is intentionally omitted — Next.js adds immutable
-          // caching for those assets itself; overriding it breaks dev behavior.
-        ];
+    const headers = [
+      // Security headers on every route — never include Cache-Control here
+      // because dynamic/protected pages need no-store and static pages need
+      // different TTLs. A single catch-all Cache-Control broke auth caching.
+      {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
+    ];
 
-    headers.push({
-      source: '/api/auth/:path*',
-      headers: [{ key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' }],
-    });
+    if (!shouldSkipCaching) {
+      headers.push(
+        // Static public assets — cache forever (content-addressed by Next.js)
+        {
+          source: '/fonts/:font*',
+          headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+        },
+        {
+          source: '/images/:image*',
+          headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+        },
+        {
+          source: '/icons/:path*',
+          headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+        },
+        // /_next/static omitted — Next.js adds immutable caching itself.
+        //
+        // Authenticated / dynamic pages must NEVER be cached by the browser
+        // or CDN. A cached response bypasses middleware and serves stale data.
+        {
+          source: '/(|dashboard|setup)',
+          headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
+        },
+      );
+    }
 
-    // The service worker must always revalidate so updates ship immediately.
-    headers.push({
-      source: '/sw.js',
-      headers: [
-        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
-        { key: 'Service-Worker-Allowed', value: '/' },
-      ],
-    });
+    // Auth API and service worker always bypass cache regardless of env.
+    headers.push(
+      {
+        source: '/api/auth/:path*',
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Service-Worker-Allowed', value: '/' },
+        ],
+      },
+    );
 
     return headers;
   },

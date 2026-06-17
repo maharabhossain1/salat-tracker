@@ -8,7 +8,6 @@ export default auth(function proxy(req: NextRequest & { auth: unknown }) {
   const isAuthPage =
     req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/register');
   const isDashboard = req.nextUrl.pathname.startsWith('/dashboard');
-
   if (isDashboard && !isLoggedIn) {
     return NextResponse.redirect(new URL('/login', req.url));
   }

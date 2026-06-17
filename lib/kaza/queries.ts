@@ -1,4 +1,5 @@
 import { and, eq, sql } from 'drizzle-orm';
+import { unstable_noStore as noStore } from 'next/cache';
 
 import { db } from '@/lib/db';
 import { kazaLogs, kazaTargets } from '@/lib/db/schema';
@@ -31,6 +32,7 @@ function num(v: unknown): number {
 }
 
 export async function getKazaDashboard(userId: string): Promise<KazaDashboard> {
+  noStore(); // opt out of Next.js full-route cache — always fetch live from DB
   const today = todayStr();
 
   const [targets, completedRows, todayRows] = await Promise.all([
