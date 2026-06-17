@@ -1,29 +1,60 @@
 @import 'tailwindcss';
 
-/* ── shadcn/ui compatibility ─────────────────────────────────── */
+/* ── Design tokens: calm emerald wellness ────────────────────── */
 :root {
-  --background: oklch(0.97 0.01 250);
-  --foreground: oklch(0.15 0.01 250);
-  --primary: oklch(0.55 0.18 250);
-  --primary-foreground: oklch(0.98 0.005 250);
-  --secondary: oklch(0.94 0.01 250);
-  --secondary-foreground: oklch(0.25 0.01 250);
-  --muted: oklch(0.94 0.01 250);
-  --muted-foreground: oklch(0.5 0.01 250);
-  --accent: oklch(0.94 0.01 250);
-  --accent-foreground: oklch(0.25 0.01 250);
-  --destructive: oklch(0.6 0.22 27);
-  --border: oklch(0.88 0.01 250);
-  --input: oklch(0.88 0.01 250);
-  --ring: oklch(0.55 0.18 250);
-  --radius: 8px;
+  --background: oklch(0.98 0.012 160);
+  --foreground: oklch(0.24 0.03 162);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 250);
+  --card-foreground: oklch(0.24 0.03 162);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 250);
+  --popover-foreground: oklch(0.24 0.03 162);
+  --primary: oklch(0.5 0.11 162);
+  --primary-foreground: oklch(0.99 0.01 160);
+  --secondary: oklch(0.96 0.02 162);
+  --secondary-foreground: oklch(0.32 0.04 162);
+  --muted: oklch(0.96 0.018 162);
+  --muted-foreground: oklch(0.52 0.02 162);
+  --accent: oklch(0.92 0.04 162);
+  --accent-foreground: oklch(0.3 0.05 162);
+  --destructive: oklch(0.58 0.2 27);
+  --destructive-foreground: oklch(0.99 0.005 160);
+  --border: oklch(0.9 0.018 162);
+  --input: oklch(0.9 0.018 162);
+  --ring: oklch(0.5 0.11 162);
+  --radius: 1rem;
+  /* Brand tones for gradients / hero. */
+  --brand-deep: oklch(0.42 0.1 164);
+  --brand-bright: oklch(0.62 0.13 160);
 }
 
-/* ── Base reset ─────────────────────────────────────────────── */
+/* Map tokens onto Tailwind's color utilities (v4). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-bright: var(--brand-bright);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-lora), Georgia, 'Times New Roman', serif;
+}
+
+/* ── Base ───────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -32,10 +63,56 @@
 
 html {
   height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   min-height: 100%;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  /* Soft mint wash that fades to clean white. */
+  background-color: var(--background);
+  background-image: radial-gradient(
+    120% 80% at 50% -10%,
+    oklch(0.95 0.05 162) 0%,
+    var(--background) 55%
+  );
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Reusable soft elevation (unlayered → available as a utility class). */
+.shadow-soft {
+  box-shadow:
+    0 1px 2px oklch(0.4 0.05 162 / 0.04),
+    0 8px 24px -12px oklch(0.4 0.05 162 / 0.18);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -21,5 +21,7 @@ export default auth(function proxy(req: NextRequest & { auth: unknown }) {
 });
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|icons|apple-touch-icon.png|favicon.png|offline).*)',
+  ],
 };

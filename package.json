@@ -7,7 +7,9 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "pnpm db:up && next dev --turbopack",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -15,6 +17,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
+    "gen:icons": "node scripts/gen-icons.cjs",
     "prepare": "husky",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

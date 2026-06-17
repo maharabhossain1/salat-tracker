@@ -60,6 +60,15 @@ const nextConfig: NextConfig = {
       headers: [{ key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' }],
     });
 
+    // The service worker must always revalidate so updates ship immediately.
+    headers.push({
+      source: '/sw.js',
+      headers: [
+        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        { key: 'Service-Worker-Allowed', value: '/' },
+      ],
+    });
+
     return headers;
   },
   experimental: {
